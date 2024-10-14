@@ -1,0 +1,170 @@
+---
+title: "STAT 3355 - HW 2 - Yebom Kim"
+output: pdf_document
+date: "2024-02-14"
+---
+
+## Problem 1
+
+## Problem 1 - (a)
+```{r block1} 
+# Just follow the coding style guide, you don't need to run
+mat <- matrix(c(34, 23, 53, 6, 78, 93, 12, 41, 99 ), nrow = 3)
+df <- as.data.frame(mat)
+names(df) <- c("score_given_to_car_on_driving_test",
+               "score.given.to.van.on.driving.test", 
+               "score-given-to-truck-on-driving-test")
+```
+## Problem 1 - (b)
+```{r block2}
+library(ggplot2)
+head(mpg)
+second_version_of_mpg <- mpg[mpg$cyl == 6,] 
+second_version_of_mpg$class <- as.character(mpg2$class)
+```
+
+## Problem 2
+
+```{r block3}
+setwd("/Users/springkim/Downloads/DataSet/dataverse_files")
+senate_data <- read.csv("1976-2020-senate.csv")
+```
+## Problem 2 - (a)
+```{r block4}
+year <- c(senate_data$year)
+year_factor <- factor(year)
+print(year_factor)
+#senate_data$state <- factor(senate_data$state)
+#senate_data$party_simplified <- factor(senate_data$party_simplified)
+#print(year_factor)
+```
+## Problem 2 - (b)
+```{r block5}
+#Subset the dataset by extracting the data for the state of Texas. Only keep the columns: year, state, candidatevotes, totalvotes, and party simplified. Use this data subset for the rest of the question
+texas_data <- subset(senate_data, state == "TEXAS", select = c(year, state, candidatevotes, totalvotes, party_simplified))
+print(texas_data)
+```
+## Problem 2 - (c)
+```{r block6}
+# Calculate the average and median number of votes received by democratic, repub-lican, libertarian, and other candidates in the state of Texas. Round your numeric answer to the nearest whole number.
+#Democratic
+dem <- subset(texas_data, party_simplified == "DEMOCRAT") 
+avgDem <- round(mean(dem[, "candidatevotes"]), 0) 
+medianDem <- round(median(dem[, "candidatevotes"]), 0) 
+cat("The average of democratic is: ", avgDem, "\n")
+cat("The median of democratic is: ", medianDem, "\n")
+
+
+#Republican
+rep <- subset(texas_data, party_simplified == "REPUBLICAN")
+avgRep <- round(mean(rep[, "candidatevotes"]), 0) 
+medianRep <- round(median(rep[, "candidatevotes"]), 0)
+cat("The average of republican is: ", avgRep, "\n")
+cat("The median of republican is: ", medianRep, "\n")
+
+#Libertarian
+lib <- subset(texas_data, party_simplified == "LIBERTARIAN")
+avgLib <- round(mean(lib[, "candidatevotes"]), 0) 
+medianLib <- round(median(lib[, "candidatevotes"]), 0)
+cat("The average of libertarian is: ", avgLib, "\n")
+cat("The median of libertarian is: ", medianLib, "\n")
+
+#Other Candidates
+othercan <- subset(texas_data, party_simplified == "OTHER")
+avgothercan <- round(mean(othercan$candidatevotes), 0)
+medianothercan <- round(median(othercan$candidatevotes), 0)
+cat("The average of other candidates is: ", avgothercan, "\n")
+cat("The median of other candidates is: ", medianothercan, "\n")
+```
+## Problem 2 - (d)
+```{r block7}
+#Identify the years in which the democratic candidate from Texas won.
+democratic_wins <- as.character((texas_data[[c("year")]]))
+cat("Years Democrat Texan Won: ", (unique(as.numeric(democratic_wins))))
+
+democratic_wins <- as.character()
+```
+
+## Problem 3
+
+## Problem 3 - (a)
+```{r block}
+ta_data <- read.csv("/Users/springkim/Downloads/DataSet/teaching+assistant+evaluation/tae.data", header = FALSE, col.names = c("English", "Instructor", "Course", "Semester", "Size","Rating"))
+print(ta_data)
+```
+## Problem 3 - (b)
+```{r block8}
+ta_data$TA_ID <- 1 : nrow(data)
+ta_data$English_speaker <- data$English_speaker == 1
+ta_data$Semester <- data$Semester == 2
+ta_data$Class_attribute <- factor(data$Class_attribute, levels = c("low", "medium", "high"), ordered = TRUE)
+ta_data[, "Semester"] <- ta_data[, "Semester"] == 2
+
+```
+
+## Problem 3 - (c)
+```{r block10}
+ta_data[, "Rating"] <- factor(ta_data[, "Rating"], levels = 1:3,
+labels = c("low", "medium", "high"), ordered = TRUE)
+print(ta_data)
+```
+## Problem 3 - (d)
+```{r block11}
+regular_sem <- subset(ta_data, Semester == TRUE) 
+summer_sem <- subset(ta_data, Semester == FALSE)
+cat("Regular semester average: ", round(mean(regular_sem[, "Size"]), 2), "\n")
+cat("Regular semester median: ", round(median(regular_sem[, "Size"]), 2), "\n")
+cat("Summer semester average: ", round(mean(summer_sem[, "Size"]), 2), "\n")
+cat("Summer semester median: ", round(median(summer_sem[, "Size"]), 2), "\n")
+
+regular_sem <- subset(ta_data, Semester == TRUE)
+summer_sem <- subset(ta_data, Semester == FALSE)
+cat("Regular semester average: ", round(mean(regular_sem[, "Size"]), 2), "\n")
+cat("REgular semester median: ", round(mean(regular_sem[, "Size"]), 2), "\n")
+cat("Summer semester average: ", round(mean(summer_sem[, "Size"]), 2), "\n")
+```
+## Problem 3 - (e)
+```{r block12}
+# native speaker from summer sem, regular sem
+# non-native speaker from summer sem, regular sem
+cat("English TA during regular semester:", 
+    nrow(subset(regular_sem, English == TRUE)), "\n")
+cat("English TA during summer semester:", 
+    nrow(subset(summer_sem, English == TRUE)), "\n")
+cat("Non-native English TA during regular semester:", 
+    nrow(subset(regular_sem, English == FALSE)), "\n")
+cat("Non-native English TA during summer semester:", 
+    nrow(subset(summer_sem, English == FALSE)), "\n")
+##
+cat("Native TA during the regular semester: ", nrow(subset(regular_sem, English == TRUE)), "\n")
+cat("Native TA during the summer semeser: ", nrow(subset(summer_sem, English == FALSE)), "\n")
+cat("Non-natice TA during the regular semester: ", nrow(subset(regular_sem, English == TRUE)), "\n")
+cat("Non-native TA during the summer semester: ", nrow(subset(summer_sem, English == FALSE)), "\n")
+```
+## Problem 3 - (f)
+```{r block13}
+#How many native English speaker TAs in this data? 
+#What’s the proportion of them received high scores? 
+#How many non native English speaker TAs in this data? 
+#What’s the proportion of them received high scores ? Round your numeric answer to 2 decimal places.
+native_english <- subset(ta_data, English == TRUE) 
+cat("Total Native English speaker: ", nrow(native_english), "\n")
+
+cat("High Score Native Proportion: ",
+round(mean(native_english[, "Rating"] == "high", na.rm = TRUE), 2), "\n")
+
+nonnative_english <- subset(ta_data, English == FALSE) 
+cat("Total Non-native English speaker: ", nrow(nonnative_english), "\n")
+
+cat("High Score Non-native Proportion: ", round(mean(nonnative_english[, "Rating"] == "high", na.rm = TRUE), 2), "\n")
+```
+
+## Problem 4
+```{r block14}
+# About my previous team project experiences, thankfully all my teammates 
+#I have met are really passionate and participatory so that I have never met 
+#couch potatoes or hitchhikers. After reading this article and if 
+#I met couch potatoes or hitchhikers during the team project, 
+#I'm not absorb them and I'll do the mirroring. I also thought 
+#I shouldn't be that kind of person.
+```
