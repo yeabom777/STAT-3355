@@ -1,0 +1,182 @@
+---
+title: "Project"
+output: pdf_document
+date: "2024-04-17"
+---
+
+```{r block1}
+library(ggplot2)
+library(dplyr)
+summer_data <- read.csv("/Users/springkim/Downloads/archive/Athletes_summer_games.csv")
+winter_data <- read.csv("/Users/springkim/Downloads/archive/Athletes_winter_games.csv")
+```
+## Done
+```{r block2}
+# Q3. Trends between years and popular/dominant sports(Summer)
+
+summer_year_intervals <- list(summer_data,
+  "1896 - 1920" = c(1896:1920),
+  "1924 - 1944" = c(1924:1944),
+  "1948 - 1968" = c(1948:1968),
+  "1972 - 1992" = c(1972:1992),
+  "1996 - 2020" = c(1996:2020)
+)
+
+categorize_year <- function(year) {
+  for (interval_name in names(summer_year_intervals)) {
+    interval <- summer_year_intervals[[interval_name]]
+    if (year %in% interval) {
+      return(interval_name)
+    }
+  }
+}
+
+summer_data$YearInterval <- sapply(summer_data$Year, categorize_year)
+
+aggregated_data <- summer_data %>%
+  group_by(YearInterval, Sport) %>%
+  summarise(Count = n()) %>%
+  ungroup()
+
+top_3_sports <- aggregated_data %>%
+  group_by(YearInterval) %>%
+  top_n(3, Count) %>%
+  ungroup()
+
+total_counts <- aggregated_data %>%
+  group_by(YearInterval) %>%
+  summarise(Total = sum(Count))
+
+proportions <- top_3_sports %>%
+  left_join(total_counts, by = "YearInterval") %>%
+  mutate(Proportion = Count / Total)
+
+proportions <- proportions %>%
+  arrange(YearInterval, desc(Proportion)) %>%
+  mutate(Sport = factor(Sport, levels = unique(Sport)))
+
+ggplot(proportions, aes(x = YearInterval, y = Proportion, fill = Sport)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(Proportion)), position = position_stack(vjust = 0.5), size = 3, color = "black") +
+  labs(x = "Year Interval", y = "Proportion", fill = "Sport") +
+  ggtitle("Top 3 Summer Olympics Sports in Each Year Interval") +
+  scale_y_continuous(labels = scales::percent) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5),
+        legend.position = "right")
+```
+
+```{r block3}
+# Q4.
+
+winter_data$Interval <- cut(winter_data$Year, breaks = c(1924, 1945, 1969, 1993, 2015), labels = c("1924~1944", "1948~1968", "1972~1992", "1996~2014"), include.lowest = TRUE)
+
+# Calculate total games for each interval
+total_games <- winter_data %>%
+  group_by(Interval) %>%
+  summarise(Total_Games = n())
+
+# Calculate the top 3 games and their proportions for each interval
+top3_games <- winter_data %>%
+  group_by(Interval, Sport) %>%
+  summarise(Total = n()) %>%
+  group_by(Interval) %>%
+  arrange(desc(Total)) %>%
+  mutate(rank = row_number()) %>%
+  filter(rank <= 3) %>%
+  left_join(total_games, by = "Interval") %>%
+  mutate(Proportion = (Total / Total_Games))
+
+# Plotting
+ggplot(top3_games, aes(x = Interval, y = Proportion, fill = Sport)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = paste0(round(Proportion * 100, 1), "%")), position = position_stack(vjust = 0.5), size = 3) +
+  labs(title = "Top 3 Winter Oplympics Sports in Each Year Intervals",
+       x = "Year Intervals",
+       y = "Proportion") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 0.7)) + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+## Done
+```{r block4}
+# Q9. Participation - Summer
+all_data <- bind_rows(summer_data)
+
+summer_year_intervals <- list(
+  "1896 - 1920" = c(1896:1920),
+  "1924 - 1944" = c(1924:1944),
+  "1948 - 1968" = c(1948:1968),
+  "1972 - 1992" = c(1972:1992),
+  "1996 - 2020" = c(1996:2020)
+)
+
+categorize_year <- function(year) {
+  for (interval_name in names(summer_year_intervals)) {
+    interval <- summer_year_intervals[[interval_name]]
+    if (year %in% interval) {
+      return(interval_name)
+    }
+  }
+}
+
+all_data$YearInterval <- sapply(all_data$Year, categorize_year)
+
+aggregated_data <- all_data %>%
+  group_by(YearInterval) %>%
+  summarise(TotalParticipants = n_distinct(Name))
+
+ggplot(aggregated_data, aes(x = YearInterval, y = TotalParticipants, group = 1)) +
+  geom_line() +
+  geom_point() +
+  geom_text(aes(label = TotalParticipants), vjust = 1, size = 5, color = "red") +
+  labs(x = "Year Interval", y = "Total Summer Participants", title = "Total Participants in Summer Olympic by Year Intervals") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+```
+## Done
+```{r block 5}
+# Q10. Participation - Winter
+
+winter_year_intervals <- list(
+  "1924 - 1944" = c(1924:1944),
+  "1948 - 1968" = c(1948:1968),
+  "1972 - 1992" = c(1972:1992),
+  "1996 - 2014" = c(1996:2014)
+)
+
+calculate_participants <- function(data, years) {
+  participants <- sapply(years, function(interval) {
+    sum(data$Year %in% interval)
+  })
+  return(participants)
+}
+
+participants <- calculate_participants(winter_data, winter_year_intervals)
+
+participants_df <- data.frame(
+  year_interval = names(participants),
+  participants = participants
+)
+
+ggplot(participants_df, aes(x = year_interval, y = participants, group = 1)) +
+  geom_line() +
+  geom_point() +
+  geom_text(aes(label = participants), vjust = 1, size = 5, color = "red") +  # Add participant counts as text annotations
+  labs(
+    x = "Year Intervals",
+    y = "Participants",
+    title = "Total Participants in Winter Olympic by Year Intervals"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5))
+```
+```{r block13}
+print("Miss you sooo much 혜원언니 ❤️")
+print("언니 종강하고 만나 그때까지 잘 버티자!")
+```
+
+
