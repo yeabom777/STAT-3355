@@ -1,0 +1,246 @@
+---
+title: "STAT 3355  - HW 4"
+output: pdf_document
+date: "2024-03-19"
+---
+## Problem 1
+```{r block1}
+library(ggplot2)
+data <- read.csv("/Users/springkim/downloads/DataSet/train.csv")
+```
+## Problem 1 - (a)
+```{r block2}
+ggplot(data, aes(x = battery_power, y = ram, color = factor(price_range))) +
+  geom_point() + 
+  labs(x = "Battery Power", y = "RAM") + 
+  ggtitle("Scatter Plot of Battery Power vs RAM") + theme_minimal()
+```
+## Problem 1 - (b)
+```{r block3}
+ggplot(data, aes(x = battery_power, y = ram, color = factor(price_range))) +
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) + 
+  labs(x = "Battery Power", y = "RAM") + 
+  ggtitle("Scatter Plot of Battery Power vs RAM with Trend Lines") +
+  theme_minimal()
+```
+## Problem 1 - (c)
+```{r block4}
+ggplot(data, aes(x = ram, fill = factor(price_range))) +
+  geom_density(alpha = 0.5) +
+  labs(x = "RAM", y = "Density") +
+  ggtitle("Density Curves of RAM by Price Range") +
+  theme_minimal()
+```
+## Problem 1 - (d)
+```{r block5}
+ggplot(data, aes(x = factor(price_range), y = ram, fill = factor(price_range))) +
+  geom_boxplot() +
+  labs(x = "Price Range", y = "RAM") +
+  ggtitle("Box Plot of RAM by Price Range") +
+  theme_minimal()
+```
+## Problem 1 - (e)
+```{r block6}
+ggplot(data, aes(x = factor(price_range), y = ram, fill = factor(price_range))) +
+  geom_violin() +
+  labs(x = "Price Range", y = "RAM") +
+  ggtitle("Violin Plot of RAM by Price Range") +
+  theme_minimal()
+```
+## Problem 1 - (f)
+```{r block7}
+ggplot(data, aes(x = factor(price_range), fill = factor(price_range))) +
+  geom_bar(aes(y = log2(ram)), stat = "identity", position = "stack") +
+  labs(x = "Price Range", y = "Log2(RAM)") +
+  ggtitle("Stacked Bar Plot of Price Range vs Log2(RAM)") +
+  theme_minimal()
+```
+## Problem 2
+```{r block8}
+library(UsingR)
+library(ggplot2)
+library(tidyverse)
+```
+
+## Problem 2 - (a)
+```{r block9}
+cereal_data <- data("UScereal")
+full_names <- c("General Mills", "Kelloggs", "Nabisco", "Post", "Quaker Oats", "Ralston Purina")
+UScereal$mfr <- factor(UScereal$mfr, labels = full_names)
+levels(UScereal$mfr)
+```
+## Problem 2 - (b)
+```{r block10}
+UScereal$shelf <- factor(UScereal$shelf) 
+levels(UScereal$shelf) <- c("Low", "Middle", "Upper")
+levels(UScereal$shelf)
+```
+## Problem 2 - (c)
+```{r block11}
+UScereal$Product <- rownames(UScereal)
+```
+
+## Problem 2 - (d)
+```{r block12}
+proteinCor <- cor(UScereal$calories, UScereal$protein) 
+fatCor <- cor(UScereal$calories, UScereal$fat) 
+sodiumCor <- cor(UScereal$calories, UScereal$sodium) 
+fiberCor <- cor(UScereal$calories, UScereal$fibre) 
+carboCor <- cor(UScereal$calories, UScereal$carbo) 
+sugarCor <- cor(UScereal$calories, UScereal$sugars) 
+potassCor <- cor(UScereal$calories, UScereal$potassium)
+cor_df <- data.frame(Nutrience = c("Protein", "Fat", "Sodium", "Fiber", "Carbohydrates", "Sugars", "Potassium"),
+                     Calorie_Correlation=c(proteinCor, fatCor, sodiumCor, fiberCor, carboCor, sugarCor, potassCor))
+print(cor_df)
+```
+## Problem 2 - (e)
+```{r block13}
+ordered_cor_df <- cor_df[order(-cor_df$Calorie_Correlation),]
+barplot(ordered_cor_df$Calorie_Correlation,
+        names.arg = ordered_cor_df$Nutrience,
+        main = "Pearson Correlations of Calories vs Nutrience",
+        xlab = "Nutrient",
+        ylab = "Pearson Correlation Coeffiecient",
+        col = "orange",
+        cex.names = 0.6,
+        ylim = range(pretty(c(0, ordered_cor_df$Calorie_Correlation))))
+
+# Highest value is carbohydrates.
+```
+## Problem 2 - (f)
+```{r block14}
+ggplot(UScereal, aes(x = carbo , y = calories )) + geom_point() +
+labs(title = "Calories vs Carbs", x = "Carbohydrates", y = "Calories") + geom_smooth(method = "lm", se = FALSE)
+```
+## Problem 2 - (f)
+```{r block15}
+ggplot(UScereal, aes(x = carbo , y = calories )) + geom_point() +
+labs(title = "Calories vs Carbs",
+     x = "Carbohydrates",
+     y = "Calories") + geom_smooth(method = "lm", se = FALSE)
+```
+## Problem 2 - (h)
+```{r block16}
+subGandK <- subset(UScereal, mfr %in% c("General Mills", "Kelloggs"))
+ggplot(subGandK, aes(x = calories, fill = mfr)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Graph: Calorie Comparison General Mills vs Kelloggs Cereal",
+       x = "Calories",
+       y = "Density",
+       fill = "Manufacturer") +
+  theme_minimal()
+```
+## Problem 2 - (i)
+```{r block17}
+nutVSmfr <- UScereal[, c("mfr", "protein", "fat", "sodium", "fibre", "carbo", "sugars", "potassium")]
+nutVSmfr_data <- gather(nutVSmfr, Nutrition, Value, -mfr)
+ggplot(nutVSmfr_data, aes(x = mfr, y = Value, fill = mfr)) + geom_boxplot() +
+facet_wrap(~ Nutrition, scales = "free", ncol = 3) + labs(title = "Box Plots: Nutritience by Manufacturer",
+x = "Manufacturer",
+y = "Value",
+fill = "Manufacturer") +
+theme_minimal() +
+theme(axis.text.x = element_blank())
+
+## Nabisco looks good for healthy diets. Low sugar and high protein and fibre.
+```
+## Problem 2 - (j)
+```{r block18}
+ggplot(UScereal, aes(x = mfr, fill = shelf)) + geom_bar(position = "fill") +
+scale_fill_manual(values = c("orange", "blue", "pink")) + labs(title = "Normalized: Manufacturer vs Shelf Placement",
+x = "Manufacturer", y = "Count",
+fill = "Shelf") +
+theme_minimal()
+```
+## Problem 3 - (a)
+```{r block19}
+library(UsingR)
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+
+data("diamonds")
+ggplot(diamonds, aes(x = carat)) +
+geom_histogram(binwidth = 0.15, fill = "orange", color = "black") + labs(x = "Carat", y = "Frequency", title = "Histogram of Carat") + theme_minimal()
+```
+## Problem 3 - (b)
+```{r block20}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+geom_point() +
+labs(x = "Carat", y = "Price", color = "Clarity", title = "Carat vs Price") + theme_minimal()
+```
+## Problem 3 - (c)
+```{r block21}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = FALSE) +  # geom_smooth inside ggplot
+  labs(x = "Carat", y = "Price", color = "Clarity", title = "Carat vs Price with Smooth Line") +
+  theme_minimal()
+```
+## Problem 3 - (d)
+```{r block22}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+geom_point() +
+facet_wrap(~ clarity) +
+labs(x = "Carat", y = "Price", color = "Clarity", title = "Carat vs Price Faceted by Clarity") +
+theme_minimal()
+```
+## Problem 3 - (e)
+```{r block23}
+## Point Plot
+ggplot(diamonds, aes(x = cut, y = carat, color = cut)) +
+geom_point() +
+labs(x = "Cut", y = "Carat", color = "Cut", title = "Point Plot: Cut vs Carat") + theme_minimal()
+```
+```{r block24}
+## Jitter Plot
+ggplot(diamonds, aes(x = cut, y = carat, color = cut)) +
+geom_jitter() +
+labs(x = "Cut", y = "Carat", color = "Cut", title = "Jitter Plot: Cut vs Carat") + theme_minimal()
+```
+```{r block25}
+## Box Plot
+ggplot(diamonds, aes(x = cut, y = carat, fill = cut)) +
+geom_boxplot() +
+labs(x = "Cut", y = "Carat", fill = "Cut", title = "Box Plot: Cut vs Carat") + theme_minimal()
+```
+```{r block26}
+## Violin Plot
+ggplot(diamonds, aes(x = cut, y = carat, fill = cut)) +
+geom_violin(trim = FALSE) +
+labs(x = "Cut", y = "Carat", fill = "Cut", title = "Violin Plot: Cut vs Carat") + theme_minimal()
+```
+## Problem 3 - (f)
+```{r block27}
+ggplot(diamonds, aes(x = clarity, fill = cut)) +
+geom_bar(position = "dodge") +
+labs(x = "Clarity", y = "Count", title = "Bar Plot: Clarity by Count") + theme(legend.position = "right")
+```
+## Problem 3 - (g)
+```{r block28}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+geom_smooth(method = "lm", se = FALSE) +
+labs(x = "Carat", y = "Price", color = "Clarity", title = "Carat vs Price w/ Smooth Line") 
+theme_minimal()
+```
+## Problem 3 - (h)
+```{r block29}
+ggplot(diamonds, aes(x = clarity, y = price, color = cut)) +
+geom_boxplot()+
+labs(x = "Clarity", y = "Price", color = "Cut", title = "Point Plot & Box Plot: Calrity vs Price")
+```
+## Problem 3 - (i)
+```{r block30}
+diamonds %>% mutate(carat = factor(round(carat),levels = c(0,1,2,3))) %>% filter(!is.na(carat)) %>%
+ggplot(aes(x = carat, y = price, color = cut)) +
+geom_boxplot() +
+labs(x = "Carat", y = "Price", color = "Cut", title = "Boxplot: Carat vs Cut w/ Price")
+```
+## Problem 3 - (j)
+```{r block31}
+ggplot(data = diamonds, aes(x = depth, y = ..density..)) + #Note: sum = 1
+geom_histogram(binwidth = .10) +
+facet_wrap(~ cut, ncol = 1, strip.position = "right") +
+labs(x = "Depth", y = "Density", title = "Histogram: Depth w/ Respect to Cut") + theme_minimal()
+```
