@@ -1,0 +1,177 @@
+---
+title: "STAT 3355 HW 1 - Yebom Kim"
+output: pdf_document
+date: "2024-02-07"
+---
+
+---
+title: "STAT 3355 HW1 - Yebom Kim"
+output: pdf_document
+date: "2024-02-07"
+---
+## Problem 1
+
+## Problem 1 - (a)
+```{r block1}
+num1 <- 8 + 9 - 7 / (3^0.3)
+print(round(num1, 2))
+```
+
+## Problem 1 - (b)
+```{r block2}
+num2 <- log(sqrt((15 + 16) / (14 + 12)), base = 2)
+print(round(num2, 2))
+```
+
+## Problem 1 - (c)
+```{r block3}
+num3 <- ((11 + sin(pi / 4)) / (factorial(3) + abs(-10))) ^ 2
+print(round(num3, 2))
+```
+
+## Problem 1 - (d)
+```{r block4}
+num4 <- 6 + 5 - 4 / 3^2
+print(round(num4, 2))
+```
+
+## Problem 1 - (e)
+```{r block5}
+num5 <- exp(sqrt((14 + 13) / (12 + 11)))
+print(round(num5, 2))
+```
+
+## Problem 1 - (f)
+```{r block6}
+num6 <- (11 + factorial(12)) / (factorial(13) + 14)^2
+print(round(num6, 2))
+```
+
+
+## Problem 2
+
+## Problem 2 - (a)
+```{r block7}
+RF <- c(2.60, 3.05, 3.74, 3.48, 5.49, 4.25, 2.57, 2.18, 3.14, 4.82, 3.28, 3.01 )
+print(RF)
+```
+
+## Problem 2 - (b)
+```{r block8}
+names(RF) <- c("Jan", "Feb", "Mar", "Apr", "May", "Jul", "Jun", "Aug", "Sep", "Oct", "Nov", "Dec")
+print(RF)
+```
+
+## Problem 2 - (c)
+```{r block9}
+print(round((mean(RF)), 2))
+```
+
+## Problem 2 - (d)
+```{r block10}
+min(RF)
+max(RF)
+```
+
+
+## Problem 3
+
+## Problem 3 - (a)
+```{r block11}
+H2 <- c(2700, 2600, 3050, 2900, 3000, 2500, 2600, 3000, 2800, 3200, 2800, 3400)
+print(H2)
+```
+
+## Problem 3 - (b)
+```{r block12}
+names(H2) <- c("Jan", "Feb", "Mar", "Apr", "May", "Jul", "Jun", "Aug", "Sep", "Oct", "Nov", "Dec")
+print(H2)
+```
+
+## Problem 3 - (c)
+```{r block13}
+sum(H2)
+```
+
+## Problem 3 - (d)
+```{r block14}
+names(H2)[which.min(diff(H2))]
+min(diff(H2))
+names(H2)[which.max(diff(H2))]
+max(diff(H2))
+```
+
+
+## Problem 4
+
+## Problem 4 - (a)
+```{r block15}
+x <- c(1, -2, 3, -4, 5, 100 ) 
+y <- x * (-1)
+y[y > 0] 
+```
+
+## Problem 4 - (b)
+```{r block16}
+# create a sequence from 1 to 50 
+z <- seq(1:50)
+print(z)
+# test whether an observation is even
+even <- z %% 2 == 0
+# subset z by the test above
+z = z[even]
+print(z)
+```
+
+## Problem 4 - (c)
+```{r block17}
+mean <- function(x) { 
+  sum(x) / length(x)
+} 
+```
+
+## Problem 5
+```{r block18}
+print_square <- function() { 
+  final <- NULL
+  for (x in 1:1000) {
+    if (sqrt(x) %% 1 == 0) {
+      final <- c(final, x)
+    }
+  }
+  return(final)
+  }
+print_square()
+```
+
+## Problem 6
+```{r block19}
+# Test the number is prime number
+is_prime <- function(num) {
+  if (num <= 1) {
+    return(FALSE)
+  }
+  if (num == 2) {
+    return(TRUE)
+  }
+  if (any(num %% 2:(num-1) == 0)) {
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+# Function to count the prime num pairs
+count_twin_primes <- function(n) {
+  count <- 0
+  for (i in 3:(n-2)) {
+    if (is_prime(i) && is_prime(i + 2)) {
+      count <- count + 1
+    }
+  }
+  return(count)
+}
+
+n <- 100
+result <- count_twin_primes(n)
+cat("Number of twin prime pairs:", result)
+```
