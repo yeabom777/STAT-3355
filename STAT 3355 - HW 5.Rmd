@@ -1,0 +1,79 @@
+---
+title: "STAT 3355 - HW 5 - Yebom Kim"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-03-30"
+---
+## Problem 1
+```{r block1}
+library(ggplot2)
+library(tidyverse)
+```
+
+## Problem 1-(a)
+```{r block2}
+defective <- 3/75
+not_defective <- 1 - defective
+k <- 6
+probability <- (not_defective^(k - 1)) * defective
+probability <- round(probability, 3)
+cat("The probability of finding the first faulty bulb on the 6th test is", probability, "\n")
+```
+## Problem 1-(b)
+```{r block3}
+probability_b <- 1 - sum((not_defective^(1:4)) * defective)
+probability_b <- round(probability_b, 3)
+cat("Probability of taking at least four trials to find the first defective bulb:", probability_b, "\n")
+```
+## Problem 1-(c)
+```{r block4}
+probability_c <- sum((not_defective^(1:10)) * defective)
+probability_c <- round(probability_c, 3)
+cat("Probability of taking at most 10 trials to find the first defective bulb is", probability_c)
+```
+## Problem 2
+```{r block5}
+library(ggplot2) 
+library(tidyverse)
+set.seed(20220707)
+X <- replicate(10000, sum(sample(1:6, 5, replace = TRUE) == 1)) 
+dataX <- data.frame(X)
+ggplot(dataX, aes(x = X))+
+geom_histogram(binwidth = 1, color = "black") + labs(title = "Histogram of Total 1's Rolled", x = "Sum of 1's", y = "Frequency") + theme_minimal()
+cat("Sample Mean: ", round(mean(X), 3), "\n", "Sample Variance: ", round(var(X),3))
+```
+## Problem 3
+```{r block6}
+library(ggplot2) 
+library(tidyverse)
+#using p(x)
+congestionP <- round((1 - (ppois(5, 3))), 3)
+cat("Probabilty of Congestion: ", congestionP, "\n")
+#using d(x)
+xVals <- (0:10)
+probs <- dpois(xVals, 3)
+dataC <- data.frame(cars = xVals, probability = probs) 
+ggplot(dataC, aes(x = cars, y = probability)) +
+geom_bar(stat = "identity", fill = "rosybrown2", color = "black") + labs(title = "Passing Cars vs Probability", x = "# Passing Cars per Min", y = "Probability") + theme_minimal()
+```
+## Problem (4)
+```{r block7}
+library(ggplot2) 
+library(tidyverse)
+score <- round(pnorm(585, 500, 100), 3)
+cat("Probability of 585 or less: ", score)
+```
+
+```{r block8}
+cat("Quartiles\n", "Lower: ", round(qnorm(0.25, 500, 100), 3), "\n", 
+    "Median: ", round(qnorm(0.50, 500, 100), 3), "\n", 
+    "Upper: ", round(qnorm(0.75, 500, 100), 3), "\n")
+```
+## Problem (5)
+```{r block9}
+library(ggplot2)
+library(tidyverse)
+cat("P(A|B): ",
+(((0.8)*(0.05)) / (0.23)))
+```
