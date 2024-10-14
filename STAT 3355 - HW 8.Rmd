@@ -1,0 +1,79 @@
+---
+title: "STAT 3355 - HW 8"
+author: "Yebom Kim"
+date: "2024-04-25"
+output: pdf_document
+---
+
+```{r block1}
+library(ggplot2)
+library(dplyr)
+```
+
+## Problem 1
+```{r block2}
+set.seed(1)
+x <- 1:100
+epsilon <- rnorm(100, mean = 0, sd = 6)
+y <- 1 + 2*x + epsilon
+
+plot(x, y, main = "Scatter Plot with Regression Line", xlab = "x", ylab = "y", pch = 19)
+
+model <- lm(y ~ x)
+abline(model, col = "red")
+summary(model)
+p_value <- summary(model)$coefficients[2,4]
+```
+```{r block3}
+set.seed(1)
+x <- 1:100
+epsilon <- rnorm(100, mean = 0, sd = 6)
+Y <- 1 + 2*x + epsilon
+model <- lm(Y ~ x)
+summary(model)
+beta1 <- coef(model)[2]
+se_beta1 <- summary(model)$coefficients[2, 2]
+
+# Compute the t-value
+t_value <- beta1 / se_beta1
+
+# Compute the p-value
+p_value <- 2 * pt(abs(t_value), df = length(Y) - 2)
+
+# Compare p-value to significance level
+alpha <- 0.05
+if (p_value < alpha) {
+  print("Reject the null hypothesis: beta1 is not equal to 2")
+} else {
+  print("Fail to reject the null hypothesis: beta1 is equal to 2")
+}
+```
+## Problem 2
+```{r block4}
+price <- c(300000, 250000, 400000, 550000, 317000, 389000, 425000, 289000, 389000)
+num_of_room <- c(3, 3, 4, 5, 4, 3, 6, 3, 4)
+plot(price, num_of_room, main = "Plot of Bedroom vs Price", xlab = "Number of Bedroom", ylab = "Price")
+```
+
+```{r block5}
+predicted <- 2:8
+predicted_prices <- predict(model, newdata = data.frame(bedrooms = predicted), interval = "confidence")
+
+cat("\nConfidence intervals for mean price of houses with 2 to 8 bedrooms:\n")
+for (i in 1:nrow(predicted_prices)) {
+  cat("Bedrooms:", predicted[i], " - ", "CI:", predicted_prices[i, 2], "to", predicted_prices[i, 3], "\n")
+}
+```
+## Problem 3
+```{r block6}
+library(UsingR)
+data("deflection")
+data = data.frame(deflection)
+n=length(data$Deflection)
+attach(data)
+fit=lm(Deflection~Load)
+b0=as.numeric(fit$coefficients[1])
+b1=as.numeric(fit$coefficients[2])
+plot(Load,Deflection)
+ggplot(data , aes(x = Load, y = Deflection)) + geom_point(size = 0.8) + geom_smooth(method = lm)
+```
