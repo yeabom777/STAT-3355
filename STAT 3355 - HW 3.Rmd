@@ -1,0 +1,203 @@
+---
+title: "STAT 3355 - HW 3"
+output: pdf_document
+date: "2024-03-02"
+---
+```{r block1}
+library(ggplot2)
+library(dplyr)
+```
+
+## Problem 1 - (a)
+```{r block2}
+data <- read.csv("/Users/springkim/Downloads/DataSet/train.csv") 
+data$price_range <- factor(data$price_range, levels = c(0, 1, 2, 3), labels = c("Low", "Medium", "High", "Very_High"))
+data$price_range <- factor(data$price_range, levels = c(0, 1, 2, 3), labels = c("Low", "Medium", "High", "Very_High"))
+```
+
+## Problem 1 - (b)
+```{r block3}
+ggplot(data, aes(x = battery_power, y = ram, col = price_range)) + 
+  geom_point() +
+  labs(x = "RAM", y = "Battery_Power", title = "Battery_Power vs RAM") + 
+  guides(col = guide_legend(title = "Price_Range"))
+```
+
+## Problem 1 - (c)
+```{r block4}
+pearsonCorrelation <- cor(data$ram, data$battery_power, method = "pearson")
+cat("Pearson Correlation Coefficient:", pearsonCorrelation, "\n")
+
+pearsonCorrelation <- cor(data$ram, data$battery_power, method = "pearson")
+cat("Pearson Correlation Coefficient: ", pearsonCorrelation, "\n")
+```
+
+## Problem 1 - (d)
+```{r block5}
+priceLow <- data[data$price_range == "Low",] 
+priceMedium <- data[data$price_range == "Medium",]
+priceHigh <- data[data$price_range == "High",]
+priceVeryHigh <- data[data$price_ragne == "Very_High",]
+#I don't know why we have to use square bracket in here, and also why we have to add comma 아놔 모르겠다구
+```
+
+## Problem 1 - (e)
+```{r block6}
+pearsonCorrelation_priceLow <- cor(priceLow$ram, priceLow$battery_power, method = "pearson")
+
+pearsonCorrelation_priceMedium <- cor(priceMedium$ram, priceMedium$battery_power, method = "pearson")
+
+pearsonCorrelation_priceHigh <- cor(priceHigh$ram, priceHigh$battery_power, method = "pearson")
+
+pearsonCorrelation_priceVeryHigh <- cor(priceVeryHigh$ram, priceVeryHigh$battery_power, method = "pearson")
+
+cat("Pearson Correlations by Price\n", "Low Price:", pearsonCorrelation_priceLow, "\n", "Medium Price:", pearsonCorrelation_priceMedium, "\n", "High Price:", pearsonCorrelation_priceHigh, "\n", "Very High Price:", pearsonCorrelation_priceVeryHigh, "\n")
+# I think it's because part (c) calculuated just only one pearson.
+```
+
+## Problem 1 - (f)
+```{r block7}
+ggplot(data, aes(x = battery_power, y = ram, col = price_range)) + geom_point() + labs(title = "Battery_Power vs RAM", x = "RAM", y = "Battery_Power") + guides(col = guide_legend(title = "Price_Range")) +
+geom_smooth(method = "lm", se = FALSE)
+```
+
+## Problem 1 - (g)
+```{r block8}
+four_cores <- data[data$n_cores == 4, c("clock_speed", "n_cores")] 
+six_cores <- data[data$n_cores == 6, c("clock_speed", "n_cores")] 
+eight_cores <- data[data$n_cores == 8, c("clock_speed", "n_cores")]
+four_avg <- round(mean(four_cores$clock_speed), 2) 
+six_avg <- round(mean(six_cores$clock_speed), 2) 
+eight_avg <- round(mean(eight_cores$clock_speed), 2)
+four_median <- round(median(four_cores$clock_speed), 2) 
+six_median <- round(median(six_cores$clock_speed), 2) 
+eight_median <- round(median(eight_cores$clock_speed), 2)
+print(four_cores)
+print(four_avg)
+print(four_median)
+# Because there are consistent factor to average and median clock speed.
+```
+
+## Problem 1 - (h)
+```{r block9}
+#make a density curve of the ram where the 4 price ranges are in one plot and describe their shapes respectively
+ggplot(data, aes(x = ram, fill = price_range)) + geom_density(alpha = 0.5) +
+  labs(title = "RAM Density by Price Range", x = "RAM", y = "Density",
+fill = "Price Range", col = 1:length(levels(data$price_range)), pch = 1) + theme_minimal()
+```
+
+## Problem 1 - (i)
+```{r block10}
+#Make box plot of the ram where the 4 price ranges are in one plot and describe their shapes respectively
+ggplot(data, aes(x = price_range, y = ram, fill = price_range)) + geom_boxplot() + labs(title = "RAM vs Price_Range", x = "Price_Range", y = "RAM", fill = "Price_Range") + theme_minimal()
+```
+
+## Problem 1 - (j)
+```{r block11}
+ggplot(data, aes(x = price_range, y = ram, fill = price_range)) + geom_violin() +
+  labs(title = "RAM vs Price_Range",x = "Price Range", y = "RAM",
+       fill = "Price Range") + theme_minimal()
+```
+
+## Problem 1 - (k)
+```{r block12}
+data$ram_types <- round(log2(data$ram)) 
+data$ram_types <- factor(data$ram_types)
+```
+
+## Problem 1 - (l)
+```{r block13}
+ggplot(data, aes(x = price_range, fill = ram_types )) + geom_bar() +
+  labs(title = "Log_2(RAM) vs Price_Range",x = "Price_Range", y = "Log_2(RAM)",
+       fill = "RAM Types") + theme_minimal()
+```
+## Problem 2
+```{r block}
+library(ggplot2)
+library(dplyr)
+```
+
+## Problem 2 - (a)
+```{r block16}
+data("mpg")
+mpg_data <- mpg
+mpg_data$cyl <- factor(mpg_data$cyl,levels = c(4, 5, 6, 8), ordered = TRUE)
+
+data("mpg")
+mpg_data <- mpg
+mpg_data$cyl <- factor(mpg_data$cyl, levels = c(4, 5, 6,n 8), ordered = TRUE)
+```
+
+## Problem 2 - (b)
+```{r block17}
+mpg_data$trans <- factor(substr(mpg$trans, 1, 4), levels = c("auto", "manu"))
+```
+
+## Problem 2 - (c)
+```{r block18}
+mpg_data$drv <- factor(mpg_data$drv, levels = c("f", "r", "4"), ordered = TRUE)
+```
+
+## Problem 2 - (d)
+```{r block19}
+mpg_data$fl[mpg$fl %in% c("p", "r")] <- "gasoline" 
+mpg_data$fl[mpg$fl %in% c("d")] <- "diesel" 
+mpg_data$fl[mpg$fl %in% c("e", "c")] <- "other" 
+mpg_data$fl <- factor(mpg_data$fl, levels = c("gasoline", "diesel", "other"))
+```
+
+## Problem 2 - (e)
+```{r block20}
+mpg_data$class <- factor(mpg_data$class, levels = c("2seater", "subcompact", "compact", "midsize", "suv", "minivan", "pickup"), ordered = TRUE)
+```
+
+## Problem 2 - (f)
+```{r block21}
+mpg_data$country <- NA
+mpg_data <- mpg_data %>%
+  mutate(country = case_when(
+    manufacturer %in% c("Chevrolet", "Dodge", "Ford", "Jeep", "Lincoln",
+                        "Mercury", "Pontiac") ~"US", 
+    manufacturer %in% c("Honda", "Nissan", "Subaru", "Toyota") ~"Japan",
+    manufacturer %in% c("Audi", "Volkswagen") ~"Germany",
+    manufacturer %in% c("Hyundai") ~"Korea",
+    manufacturer %in% c("land rover") ~"GB"))
+```
+
+## Problem 2 - (g)
+```{r block22}
+#sorted_table <- table(mpg_data$country)[order(-table(mpg_data$country))] barplot(sorted_table, main = "Total Samples by Country", xlab = "Country", ylab = "Sample Amount", col = "red", border = "black")
+#The most: United States, the least: Great Britian
+```
+
+## Problem 2 - (h)
+```{r block23}
+us_mpg_data <- subset(mpg_data, mpg_data$country == "United States") 
+mode_cyl <- names(which.max(table(us_mpg_data$cyl)))
+mode_trans <- names(which.max(table(us_mpg_data$trans)))
+mode_fl <- names(which.max(table(us_mpg_data$fl)))
+mode_class <- names(which.max(table(us_mpg_data$class)))
+mode_drv <- names(which.max(table(us_mpg_data$drv)))
+mode_displ <- names(which.max(table(us_mpg_data$displ)))
+```
+
+## Problem 2 - (i)
+```{r block24}
+japan_mpg_data <- subset(mpg_data, country == "Japan")
+us_combined_mpg <- ((us_mpg_data$cty + us_mpg_data$hwy) / 2) 
+#japan_combined_mpg <- ((japan_mpg_data$cty + japan_mpg_data$hwy) / 2) boxplot(us_combined_mpg, japan_combined_mpg, names = c("U.S. Cars", "Japanese Cars"), main = "Combined MPG of Cars", xlab = "Country", ylab = "Miles Per Gallon", col = c("orange", "red"))
+```
+
+## Problem 2 - (j)
+```{r block25}
+par(mfrow=c(1, 2))
+#hist(us_mpg_data$displ,
+     #main = "ED: U.S. Cars",
+     #xlab = "Engine Displacement",
+     #ylab = "Frequency",
+     #col = "blue")
+#hist(japan_mpg_data$displ, 
+     #main = "ED: Japanese Cars", 
+     #xlab = "Engine Displacement", 
+     #ylab = "Frequency",col = "red")
+```
